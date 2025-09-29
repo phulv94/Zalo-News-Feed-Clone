@@ -6,7 +6,7 @@ struct SearchBarView: View {
     var body: some View {
         HStack(spacing: 16) {
             Image(systemName: "magnifyingglass")
-                .foregroundColor(.secondary)
+                .foregroundStyle(.secondary)
 
             TextField("Search", text: $searchText)
                 .textFieldStyle(.plain)
@@ -16,10 +16,10 @@ struct SearchBarView: View {
             Spacer(minLength: 0)
 
             Image(systemName: "square.and.pencil")
-                .foregroundColor(.blue)
+                .foregroundStyle(.blue)
 
             Image(systemName: "notification")
-                .foregroundColor(.orange)
+                .foregroundStyle(.orange)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
