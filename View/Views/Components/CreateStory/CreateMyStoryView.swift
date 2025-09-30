@@ -39,6 +39,10 @@ struct CreateMyStoryView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.vertical, 12)
                     .padding(.horizontal, 16)
+                    .background(
+                        RoundedRectangle(cornerRadius: 14, style: .continuous)
+                            .fill(Color(.systemGray6))
+                    )
             }
 
             HStack(spacing: 8) {
@@ -101,14 +105,5 @@ private struct CreateStoryActionButton: View {
             )
         }
         .buttonStyle(.plain)
-    }
-}
-
-struct CreateMyStoryView_Previews: PreviewProvider {
-    static var previews: some View {
-        CreateMyStoryView(avatarURL: URL(string: "https://picsum.photos/200"))
-            .previewLayout(.sizeThatFits)
-            .padding()
-            .background(Color(.systemGroupedBackground))
     }
 }

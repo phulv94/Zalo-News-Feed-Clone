@@ -1,32 +1,6 @@
 import SwiftUI
 
-struct UserActivity: Identifiable {
-    let id = UUID()
-    let userName: String
-    let userAvatarURL: URL?
-    let activeCount: Int
-    let posts: [Post]
-}
-
-struct Post: Identifiable {
-    let id = UUID()
-    let createdAt: String
-    let contentText: String?
-    let imageURL: URL?
-    let videoThumbnailURL: URL?
-    let linkPreview: LinkPreview?
-    let hashtags: [String]
-    let mentions: [String]
-}
-
-struct LinkPreview: Hashable {
-    let title: String
-    let description: String
-    let url: String
-    let imageURL: URL?
-}
-
-struct PostCell: View {
+struct PostCellView: View {
     let activity: UserActivity
 
     var body: some View {
@@ -37,8 +11,13 @@ struct PostCell: View {
                 HStack(alignment: .top, spacing: 16) {
                     ForEach(activity.posts) { post in
                         Spacer(minLength: 4)
+
                         VStack(alignment: .leading, spacing: 12) {
-                            PostCellHeader(userName: activity.userName, userAvatarURL: activity.userAvatarURL, createdAt: post.createdAt)
+                            PostCellHeader(
+                                userName: activity.userName,
+                                userAvatarURL: activity.userAvatarURL,
+                                createdAt: post.createdAt
+                            )
 
                             PostCellContent(post: post)
 
@@ -58,7 +37,6 @@ struct PostCell: View {
             }
         }
         .background(.white)
-        //.padding(.horizontal)
     }
 }
 
@@ -135,7 +113,7 @@ private struct PostCellContent: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             if let text = post.contentText, !text.isEmpty {
-                contentText(text)
+                Text(text)
                     .font(.body)
                     .foregroundStyle(Color.primary)
             }
@@ -165,10 +143,6 @@ private struct PostCellContent: View {
                 LinkPreviewView(preview: linkPreview)
             }
         }
-    }
-
-    private func contentText(_ text: String) -> some View {
-        Text(text)
     }
 }
 
@@ -285,45 +259,5 @@ private struct PostCellFooter: View {
         }
         .font(.subheadline)
         .foregroundStyle(.secondary)
-    }
-}
-
-struct PostCell_Previews: PreviewProvider {
-    static let demoActivity = UserActivity(
-        userName: "Linh Nguyen",
-        userAvatarURL: URL(string: "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?w=200"),
-        activeCount: 4,
-        posts: [
-            Post(
-                createdAt: "5m ago",
-                contentText: "Check out our latest design updates for the Zalo news feed clone!",
-                imageURL: URL(string: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=800"),
-                videoThumbnailURL: URL(string: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800"),
-                linkPreview: LinkPreview(
-                    title: "SwiftUI Components",
-                    description: "Build reusable SwiftUI components that feel right at home on iOS.",
-                    url: "design.dev/swiftui-components",
-                    imageURL: URL(string: "https://images.unsplash.com/photo-1517433456452-f9633a875f6f?w=1200")
-                ),
-                hashtags: ["SwiftUI", "iOSDev"],
-                mentions: ["ZaloTeam", "DesignCrew"]
-            ),
-            Post(
-                createdAt: "1h ago",
-                contentText: "Exploring new animation techniques in SwiftUI – stay tuned!",
-                imageURL: nil,
-                videoThumbnailURL: nil,
-                linkPreview: nil,
-                hashtags: ["Animation", "SwiftUI"],
-                mentions: []
-            )
-        ]
-    )
-
-    static var previews: some View {
-        PostCell(activity: demoActivity)
-            .previewLayout(.sizeThatFits)
-            .padding(.vertical)
-            .background(Color(.systemGroupedBackground))
     }
 }
