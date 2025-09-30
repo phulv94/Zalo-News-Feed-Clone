@@ -33,25 +33,27 @@ struct PostCell: View {
         VStack(alignment: .leading, spacing: 16) {
             ActiveHeaderView(userName: activity.userName, activeCount: activity.activeCount)
 
-            HStack(alignment: .top, spacing: 16) {
-                ForEach(activity.posts) { post in
-                    VStack(alignment: .leading, spacing: 12) {
-                        PostCellHeader(userName: activity.userName, userAvatarURL: activity.userAvatarURL, createdAt: post.createdAt)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(alignment: .top, spacing: 16) {
+                    ForEach(activity.posts) { post in
+                        VStack(alignment: .leading, spacing: 12) {
+                            PostCellHeader(userName: activity.userName, userAvatarURL: activity.userAvatarURL, createdAt: post.createdAt)
 
-                        PostCellContent(post: post)
+                            PostCellContent(post: post)
 
-                        PostCellFooter()
+                            PostCellFooter()
+                        }
+                        .frame(width: 300)
+                        .padding(16)
+                        .background(
+                            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                                .fill(Color(.systemBackground))
+                                .shadow(color: .black.opacity(0.04), radius: 12, x: 0, y: 4)
+                        )
                     }
-                    .padding(16)
-                    .background(
-                        RoundedRectangle(cornerRadius: 20, style: .continuous)
-                            .fill(Color(.systemBackground))
-                            .shadow(color: .black.opacity(0.04), radius: 12, x: 0, y: 4)
-                    )
                 }
-                Spacer(minLength: 0)
+                .padding(.trailing)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding(.horizontal)
     }
