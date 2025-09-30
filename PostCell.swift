@@ -1,10 +1,15 @@
 import SwiftUI
 
-struct Post: Identifiable {
+struct UserActivity: Identifiable {
     let id = UUID()
     let userName: String
     let userAvatarURL: URL?
     let activeCount: Int
+    let posts: [Post]
+}
+
+struct Post: Identifiable {
+    let id = UUID()
     let createdAt: String
     let contentText: String?
     let imageURL: URL?
@@ -22,25 +27,31 @@ struct LinkPreview: Hashable {
 }
 
 struct PostCell: View {
-    let post: Post
+    let activity: UserActivity
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            ActiveHeaderView(userName: post.userName, activeCount: post.activeCount)
+            ActiveHeaderView(userName: activity.userName, activeCount: activity.activeCount)
 
-            VStack(alignment: .leading, spacing: 12) {
-                PostCellHeader(userName: post.userName, userAvatarURL: post.userAvatarURL, createdAt: post.createdAt)
+            HStack(alignment: .top, spacing: 16) {
+                ForEach(activity.posts) { post in
+                    VStack(alignment: .leading, spacing: 12) {
+                        PostCellHeader(userName: activity.userName, userAvatarURL: activity.userAvatarURL, createdAt: post.createdAt)
 
-                PostCellContent(post: post)
+                        PostCellContent(post: post)
 
-                PostCellFooter()
+                        PostCellFooter()
+                    }
+                    .padding(16)
+                    .background(
+                        RoundedRectangle(cornerRadius: 20, style: .continuous)
+                            .fill(Color(.systemBackground))
+                            .shadow(color: .black.opacity(0.04), radius: 12, x: 0, y: 4)
+                    )
+                }
+                Spacer(minLength: 0)
             }
-            .padding(16)
-            .background(
-                RoundedRectangle(cornerRadius: 20, style: .continuous)
-                    .fill(Color(.systemBackground))
-                    .shadow(color: .black.opacity(0.04), radius: 12, x: 0, y: 4)
-            )
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding(.horizontal)
     }
@@ -273,26 +284,39 @@ private struct PostCellFooter: View {
 }
 
 struct PostCell_Previews: PreviewProvider {
-    static let demoPost = Post(
+    static let demoActivity = UserActivity(
         userName: "Linh Nguyen",
         userAvatarURL: URL(string: "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?w=200"),
         activeCount: 4,
-        createdAt: "5m ago",
-        contentText: "Check out our latest design updates for the Zalo news feed clone!",
-        imageURL: URL(string: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=800"),
-        videoThumbnailURL: URL(string: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800"),
-        linkPreview: LinkPreview(
-            title: "SwiftUI Components",
-            description: "Build reusable SwiftUI components that feel right at home on iOS.",
-            url: "design.dev/swiftui-components",
-            imageURL: URL(string: "https://images.unsplash.com/photo-1517433456452-f9633a875f6f?w=1200")
-        ),
-        hashtags: ["SwiftUI", "iOSDev"],
-        mentions: ["ZaloTeam", "DesignCrew"]
+        posts: [
+            Post(
+                createdAt: "5m ago",
+                contentText: "Check out our latest design updates for the Zalo news feed clone!",
+                imageURL: URL(string: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=800"),
+                videoThumbnailURL: URL(string: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800"),
+                linkPreview: LinkPreview(
+                    title: "SwiftUI Components",
+                    description: "Build reusable SwiftUI components that feel right at home on iOS.",
+                    url: "design.dev/swiftui-components",
+                    imageURL: URL(string: "https://images.unsplash.com/photo-1517433456452-f9633a875f6f?w=1200")
+                ),
+                hashtags: ["SwiftUI", "iOSDev"],
+                mentions: ["ZaloTeam", "DesignCrew"]
+            ),
+            Post(
+                createdAt: "1h ago",
+                contentText: "Exploring new animation techniques in SwiftUI – stay tuned!",
+                imageURL: nil,
+                videoThumbnailURL: nil,
+                linkPreview: nil,
+                hashtags: ["Animation", "SwiftUI"],
+                mentions: []
+            )
+        ]
     )
 
     static var previews: some View {
-        PostCell(post: demoPost)
+        PostCell(activity: demoActivity)
             .previewLayout(.sizeThatFits)
             .padding(.vertical)
             .background(Color(.systemGroupedBackground))
