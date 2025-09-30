@@ -67,6 +67,20 @@ struct SuggestStorySectionView: View {
     }
 }
 
+struct SuggestStoryView: View {
+    let stories: [SuggestStory]
+    var onStoryTap: (SuggestStory) -> Void = { _ in }
+    var onHeaderAction: () -> Void = {}
+
+    var body: some View {
+        SuggestStorySectionView(
+            stories: stories,
+            onStoryTap: onStoryTap,
+            onHeaderAction: onHeaderAction
+        )
+    }
+}
+
 struct SuggestStoryCell: View {
     let story: SuggestStory
     var onTap: () -> Void
