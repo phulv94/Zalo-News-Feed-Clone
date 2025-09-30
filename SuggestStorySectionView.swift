@@ -2,7 +2,15 @@ import SwiftUI
 
 struct SuggestStory: Identifiable, Hashable {
     let id = UUID()
-    let thumbnail: String
+    let thumbnailURL: URL?
+
+    init(thumbnail: String) {
+        self.thumbnailURL = URL(string: thumbnail)
+    }
+
+    init(thumbnailURL: URL?) {
+        self.thumbnailURL = thumbnailURL
+    }
 }
 
 struct SuggestStorySectionView: View {
@@ -65,16 +73,41 @@ struct SuggestStoryCell: View {
 
     var body: some View {
         Button(action: onTap) {
-            Image(story.thumbnail)
-                .resizable()
-                .scaledToFill()
-                .frame(width: 140, height: 200)
-                .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 18, style: .continuous)
-                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
-                )
-                .shadow(color: Color.black.opacity(0.12), radius: 8, x: 0, y: 6)
+            ZStack {
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .fill(Color(.systemGray6))
+
+                if let url = story.thumbnailURL {
+                    AsyncImage(url: url) { phase in
+                        switch phase {
+                        case .empty:
+                            ProgressView()
+                                .progressViewStyle(.circular)
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .scaledToFill()
+                        case .failure:
+                            Image(systemName: "video.slash")
+                                .font(.title2)
+                                .foregroundStyle(.secondary)
+                        @unknown default:
+                            EmptyView()
+                        }
+                    }
+                } else {
+                    Image(systemName: "video.slash")
+                        .font(.title2)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .frame(width: 140, height: 200)
+            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .stroke(Color.white.opacity(0.2), lineWidth: 1)
+            )
+            .shadow(color: Color.black.opacity(0.12), radius: 8, x: 0, y: 6)
         }
         .buttonStyle(.plain)
     }
@@ -82,11 +115,11 @@ struct SuggestStoryCell: View {
 
 struct SuggestStorySectionView_Previews: PreviewProvider {
     static let sampleStories: [SuggestStory] = [
-        SuggestStory(thumbnail: "thumb1"),
-        SuggestStory(thumbnail: "thumb2"),
-        SuggestStory(thumbnail: "thumb3"),
-        SuggestStory(thumbnail: "thumb4"),
-        SuggestStory(thumbnail: "thumb5")
+        SuggestStory(thumbnail: "https://picsum.photos/id/1015/200/300"),
+        SuggestStory(thumbnail: "https://picsum.photos/id/1016/200/300"),
+        SuggestStory(thumbnail: "https://picsum.photos/id/1018/200/300"),
+        SuggestStory(thumbnail: "https://picsum.photos/id/1020/200/300"),
+        SuggestStory(thumbnail: "https://picsum.photos/id/1024/200/300")
     ]
 
     static var previews: some View {
