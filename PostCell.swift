@@ -1,14 +1,19 @@
 import SwiftUI
 
-struct Post: Identifiable {
+struct UserActivity: Identifiable {
     let id = UUID()
     let userName: String
-    let userAvatar: String
+    let userAvatarURL: URL?
     let activeCount: Int
+    let posts: [Post]
+}
+
+struct Post: Identifiable {
+    let id = UUID()
     let createdAt: String
     let contentText: String?
-    let imageName: String?
-    let videoThumbnail: String?
+    let imageURL: URL?
+    let videoThumbnailURL: URL?
     let linkPreview: LinkPreview?
     let hashtags: [String]
     let mentions: [String]
@@ -18,29 +23,37 @@ struct LinkPreview: Hashable {
     let title: String
     let description: String
     let url: String
-    let imageName: String
+    let imageURL: URL?
 }
 
 struct PostCell: View {
-    let post: Post
+    let activity: UserActivity
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            ActiveHeaderView(userName: post.userName, activeCount: post.activeCount)
+            ActiveHeaderView(userName: activity.userName, activeCount: activity.activeCount)
 
-            VStack(alignment: .leading, spacing: 12) {
-                PostCellHeader(userName: post.userName, userAvatar: post.userAvatar, createdAt: post.createdAt)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(alignment: .top, spacing: 16) {
+                    ForEach(activity.posts) { post in
+                        VStack(alignment: .leading, spacing: 12) {
+                            PostCellHeader(userName: activity.userName, userAvatarURL: activity.userAvatarURL, createdAt: post.createdAt)
 
-                PostCellContent(post: post)
+                            PostCellContent(post: post)
 
-                PostCellFooter()
+                            PostCellFooter()
+                        }
+                        .frame(width: 300)
+                        .padding(16)
+                        .background(
+                            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                                .fill(Color(.systemBackground))
+                                .shadow(color: .black.opacity(0.04), radius: 12, x: 0, y: 4)
+                        )
+                    }
+                }
+                .padding(.trailing)
             }
-            .padding(16)
-            .background(
-                RoundedRectangle(cornerRadius: 20, style: .continuous)
-                    .fill(Color(.systemBackground))
-                    .shadow(color: .black.opacity(0.04), radius: 12, x: 0, y: 4)
-            )
         }
         .padding(.horizontal)
     }
@@ -63,16 +76,33 @@ private struct ActiveHeaderView: View {
 
 private struct PostCellHeader: View {
     let userName: String
-    let userAvatar: String
+    let userAvatarURL: URL?
     let createdAt: String
 
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
-            Image(userAvatar)
-                .resizable()
-                .scaledToFill()
-                .frame(width: 48, height: 48)
-                .clipShape(Circle())
+            AsyncImage(url: userAvatarURL, transaction: Transaction(animation: .easeInOut)) { phase in
+                switch phase {
+                case .success(let image):
+                    image
+                        .resizable()
+                        .scaledToFill()
+                case .empty:
+                    ProgressView()
+                        .tint(.secondary)
+                case .failure:
+                    Image(systemName: "person.circle")
+                        .resizable()
+                        .scaledToFit()
+                        .symbolRenderingMode(.hierarchical)
+                        .foregroundStyle(.secondary)
+                @unknown default:
+                    EmptyView()
+                }
+            }
+            .frame(width: 48, height: 48)
+            .background(Color(.systemGray5))
+            .clipShape(Circle())
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(userName)
@@ -120,18 +150,12 @@ private struct PostCellContent: View {
                     .foregroundStyle(Color.blue)
             }
 
-            if let imageName = post.imageName {
-                Image(imageName)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 220)
-                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                    .clipped()
+            if let imageURL = post.imageURL {
+                RemoteMediaView(url: imageURL, height: 220, cornerRadius: 16)
             }
 
-            if let videoThumbnail = post.videoThumbnail {
-                VideoThumbnailView(imageName: videoThumbnail)
+            if let videoThumbnailURL = post.videoThumbnailURL {
+                VideoThumbnailView(imageURL: videoThumbnailURL)
             }
 
             if let linkPreview = post.linkPreview {
@@ -145,18 +169,51 @@ private struct PostCellContent: View {
     }
 }
 
+private struct RemoteMediaView: View {
+    let url: URL
+    var height: CGFloat?
+    var cornerRadius: CGFloat = 0
+
+    var body: some View {
+        AsyncImage(url: url, transaction: Transaction(animation: .easeInOut)) { phase in
+            switch phase {
+            case .success(let image):
+                image
+                    .resizable()
+                    .scaledToFill()
+            case .empty:
+                placeholderView(symbolName: "photo")
+            case .failure:
+                placeholderView(symbolName: "exclamationmark.triangle")
+            @unknown default:
+                placeholderView(symbolName: "photo")
+            }
+        }
+        .frame(height: height)
+        .frame(maxWidth: .infinity)
+        .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+        .clipped()
+    }
+
+    @ViewBuilder
+    private func placeholderView(symbolName: String) -> some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                .fill(Color(.systemGray6))
+
+            Image(systemName: symbolName)
+                .font(.title2)
+                .foregroundStyle(.secondary)
+        }
+    }
+}
+
 private struct VideoThumbnailView: View {
-    let imageName: String
+    let imageURL: URL
 
     var body: some View {
         ZStack {
-            Image(imageName)
-                .resizable()
-                .scaledToFill()
-                .frame(height: 220)
-                .frame(maxWidth: .infinity)
-                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                .clipped()
+            RemoteMediaView(url: imageURL, height: 220, cornerRadius: 16)
 
             Circle()
                 .fill(Color.black.opacity(0.6))
@@ -175,13 +232,9 @@ private struct LinkPreviewView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Image(preview.imageName)
-                .resizable()
-                .scaledToFill()
-                .frame(height: 160)
-                .frame(maxWidth: .infinity)
-                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                .clipped()
+            if let imageURL = preview.imageURL {
+                RemoteMediaView(url: imageURL, height: 160, cornerRadius: 16)
+            }
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(preview.title)
@@ -233,26 +286,39 @@ private struct PostCellFooter: View {
 }
 
 struct PostCell_Previews: PreviewProvider {
-    static let demoPost = Post(
+    static let demoActivity = UserActivity(
         userName: "Linh Nguyen",
-        userAvatar: "avatar1",
+        userAvatarURL: URL(string: "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?w=200"),
         activeCount: 4,
-        createdAt: "5m ago",
-        contentText: "Check out our latest design updates for the Zalo news feed clone!",
-        imageName: "thumb2",
-        videoThumbnail: "thumb3",
-        linkPreview: LinkPreview(
-            title: "SwiftUI Components",
-            description: "Build reusable SwiftUI components that feel right at home on iOS.",
-            url: "design.dev/swiftui-components",
-            imageName: "thumb4"
-        ),
-        hashtags: ["SwiftUI", "iOSDev"],
-        mentions: ["ZaloTeam", "DesignCrew"]
+        posts: [
+            Post(
+                createdAt: "5m ago",
+                contentText: "Check out our latest design updates for the Zalo news feed clone!",
+                imageURL: URL(string: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=800"),
+                videoThumbnailURL: URL(string: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800"),
+                linkPreview: LinkPreview(
+                    title: "SwiftUI Components",
+                    description: "Build reusable SwiftUI components that feel right at home on iOS.",
+                    url: "design.dev/swiftui-components",
+                    imageURL: URL(string: "https://images.unsplash.com/photo-1517433456452-f9633a875f6f?w=1200")
+                ),
+                hashtags: ["SwiftUI", "iOSDev"],
+                mentions: ["ZaloTeam", "DesignCrew"]
+            ),
+            Post(
+                createdAt: "1h ago",
+                contentText: "Exploring new animation techniques in SwiftUI – stay tuned!",
+                imageURL: nil,
+                videoThumbnailURL: nil,
+                linkPreview: nil,
+                hashtags: ["Animation", "SwiftUI"],
+                mentions: []
+            )
+        ]
     )
 
     static var previews: some View {
-        PostCell(post: demoPost)
+        PostCell(activity: demoActivity)
             .previewLayout(.sizeThatFits)
             .padding(.vertical)
             .background(Color(.systemGroupedBackground))
