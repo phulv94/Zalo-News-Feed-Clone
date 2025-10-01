@@ -85,30 +85,29 @@ private struct VideoThumbnail: View {
     let url: URL
 
     var body: some View {
-        ZStack {
-            AsyncImage(url: url) { phase in
-                switch phase {
-                case .empty:
-                    Color(.systemGray5)
-                case .success(let image):
-                    image
-                        .resizable()
-                        .scaledToFill()
-                case .failure:
-                    Color(.systemGray5)
-                        .overlay(
-                            Image(systemName: "photo")
-                                .font(.title3)
-                                .foregroundStyle(.secondary)
-                        )
-                @unknown default:
-                    Color(.systemGray5)
-                }
+        AsyncImage(url: url) { phase in
+            switch phase {
+            case .empty:
+                Color(.systemGray5)
+            case .success(let image):
+                image
+                    .resizable()
+                    .scaledToFill()
+            case .failure:
+                Color(.systemGray5)
+                    .overlay(
+                        Image(systemName: "photo")
+                            .font(.title3)
+                            .foregroundStyle(.secondary)
+                    )
+            @unknown default:
+                Color(.systemGray5)
             }
-            .frame(maxWidth: .infinity)
-            .frame(height: 160)
-            .clipped()
-
+        }
+        .frame(maxWidth: .infinity)
+        .frame(height: 160)
+        .clipped()
+        .overlay(alignment: .center) {
             Circle()
                 .fill(Color.black.opacity(0.45))
                 .frame(width: 52, height: 52)
