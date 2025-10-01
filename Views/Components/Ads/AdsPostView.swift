@@ -1,14 +1,5 @@
 import SwiftUI
 
-struct AdsPost: Identifiable {
-    let id = UUID()
-    let advertiserName: String
-    let advertiserAvatarURL: URL?
-    let contentText: String
-    let imageURL: URL?
-    let actionTitle: String
-}
-
 struct AdsPostView: View {
     let post: AdsPost
     var action: () -> Void = {}
@@ -19,16 +10,16 @@ struct AdsPostView: View {
             content
             footer
         }
-        .padding(16)
+        .padding()
         .background(
             RoundedRectangle(cornerRadius: 20, style: .continuous)
                 .fill(Color(.systemBackground))
-                .shadow(color: .black.opacity(0.04), radius: 12, x: 0, y: 4)
+                .shadow(color: .black.opacity(0.06), radius: 10, x: 0, y: 4)
         )
     }
 
     private var header: some View {
-        HStack(alignment: .center, spacing: 12) {
+        HStack(spacing: 12) {
             AsyncImage(url: post.advertiserAvatarURL, transaction: Transaction(animation: .easeInOut)) { phase in
                 switch phase {
                 case .success(let image):
@@ -68,13 +59,13 @@ struct AdsPostView: View {
 
     private var content: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text(post.contentText)
-                .font(.body)
-                .foregroundStyle(Color.primary)
-
             if let imageURL = post.imageURL {
                 RemoteAdMediaView(url: imageURL, height: 220, cornerRadius: 16)
             }
+
+            Text(post.contentText)
+                .font(.body)
+                .foregroundStyle(Color.primary)
         }
     }
 
@@ -131,22 +122,5 @@ private struct RemoteAdMediaView: View {
                 .font(.title2)
                 .foregroundStyle(.secondary)
         }
-    }
-}
-
-struct AdsPostView_Previews: PreviewProvider {
-    static var previews: some View {
-        AdsPostView(
-            post: AdsPost(
-                advertiserName: "SwiftUI Courses",
-                advertiserAvatarURL: URL(string: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=200"),
-                contentText: "Level up your SwiftUI skills with our hands-on courses and real-world projects.",
-                imageURL: URL(string: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=1200"),
-                actionTitle: "Learn More"
-            )
-        )
-        .padding()
-        .previewLayout(.sizeThatFits)
-        .background(Color(.systemGroupedBackground))
     }
 }

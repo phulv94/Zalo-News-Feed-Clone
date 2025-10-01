@@ -1,18 +1,5 @@
 import SwiftUI
 
-struct SuggestStory: Identifiable, Hashable {
-    let id = UUID()
-    let thumbnailURL: URL?
-
-    init(thumbnail: String) {
-        self.thumbnailURL = URL(string: thumbnail)
-    }
-
-    init(thumbnailURL: URL?) {
-        self.thumbnailURL = thumbnailURL
-    }
-}
-
 struct SuggestStorySectionView: View {
     let stories: [SuggestStory]
     var onStoryTap: (SuggestStory) -> Void = { _ in }
@@ -21,6 +8,7 @@ struct SuggestStorySectionView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             header
+
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 12) {
                     ForEach(stories) { story in
@@ -65,11 +53,24 @@ struct SuggestStorySectionView: View {
             .buttonStyle(.plain)
         }
         .padding(.horizontal)
-        
     }
 }
 
-struct SuggestStoryCell: View {
+struct SuggestStoryView: View {
+    let stories: [SuggestStory]
+    var onStoryTap: (SuggestStory) -> Void = { _ in }
+    var onHeaderAction: () -> Void = {}
+
+    var body: some View {
+        SuggestStorySectionView(
+            stories: stories,
+            onStoryTap: onStoryTap,
+            onHeaderAction: onHeaderAction
+        )
+    }
+}
+
+private struct SuggestStoryCell: View {
     let story: SuggestStory
     var onTap: () -> Void
 
@@ -112,35 +113,5 @@ struct SuggestStoryCell: View {
             .shadow(color: Color.black.opacity(0.12), radius: 8, x: 0, y: 6)
         }
         .buttonStyle(.plain)
-    }
-}
-
-struct SuggestStoryView: View {
-    let stories: [SuggestStory]
-    var onStoryTap: (SuggestStory) -> Void = { _ in }
-    var onHeaderAction: () -> Void = {}
-
-    var body: some View {
-        SuggestStorySectionView(
-            stories: stories,
-            onStoryTap: onStoryTap,
-            onHeaderAction: onHeaderAction
-        )
-    }
-}
-
-struct SuggestStorySectionView_Previews: PreviewProvider {
-    static let sampleStories: [SuggestStory] = [
-        SuggestStory(thumbnail: "https://picsum.photos/id/1015/200/300"),
-        SuggestStory(thumbnail: "https://picsum.photos/id/1016/200/300"),
-        SuggestStory(thumbnail: "https://picsum.photos/id/1018/200/300"),
-        SuggestStory(thumbnail: "https://picsum.photos/id/1020/200/300"),
-        SuggestStory(thumbnail: "https://picsum.photos/id/1024/200/300")
-    ]
-
-    static var previews: some View {
-        SuggestStorySectionView(stories: sampleStories)
-            .previewLayout(.sizeThatFits)
-            .padding()
     }
 }
