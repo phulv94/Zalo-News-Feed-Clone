@@ -10,21 +10,25 @@ struct PostCellView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(alignment: .top, spacing: 16) {
                     ForEach(activity.posts) { post in
-                        Spacer(minLength: 4)
-
-                        VStack(alignment: .leading, spacing: 12) {
+                        VStack(spacing: 0) {
                             PostCellHeader(
                                 userName: activity.userName,
                                 userAvatarURL: activity.userAvatarURL,
                                 createdAt: post.createdAt
                             )
+                            .padding(.top, 16)
+                            .padding(.horizontal, 16)
 
                             PostCellContent(post: post)
+                                .padding(.top, 12)
+                                .padding(.horizontal, 16)
 
                             PostCellFooter()
+                                .padding(.top, 12)
+                                .padding(.horizontal, 16)
+                                .padding(.bottom, 16)
                         }
                         .frame(width: 300)
-                        .padding(16)
                         .background(
                             RoundedRectangle(cornerRadius: 20, style: .continuous)
                                 .fill(Color(.systemBackground))
@@ -32,7 +36,7 @@ struct PostCellView: View {
                         )
                     }
                 }
-                .padding(.trailing)
+                .padding(.horizontal, 16)
                 Spacer(minLength: 12)
             }
         }
