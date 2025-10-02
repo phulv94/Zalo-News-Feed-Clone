@@ -10,29 +10,14 @@ struct PostCellView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(alignment: .top, spacing: 16) {
                     ForEach(activity.posts) { post in
-                        Spacer(minLength: 4)
-
-                        VStack(alignment: .leading, spacing: 12) {
-                            PostCellHeader(
-                                userName: activity.userName,
-                                userAvatarURL: activity.userAvatarURL,
-                                createdAt: post.createdAt
-                            )
-
-                            PostCellContent(post: post)
-
-                            PostCellFooter()
-                        }
-                        .frame(width: 300)
-                        .padding(16)
-                        .background(
-                            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                                .fill(Color(.systemBackground))
-                                .shadow(color: .black.opacity(0.1), radius: 12, x: 0, y: 4)
+                        PostCellBody(
+                            userName: activity.userName,
+                            userAvatarURL: activity.userAvatarURL,
+                            post: post
                         )
                     }
                 }
-                .padding(.trailing)
+                .padding(.horizontal, 16)
                 Spacer(minLength: 12)
             }
         }
@@ -52,97 +37,6 @@ private struct ActiveHeaderView: View {
             Spacer()
         }
         .padding(.horizontal, 4)
-    }
-}
-
-private struct PostCellHeader: View {
-    let userName: String
-    let userAvatarURL: URL?
-    let createdAt: String
-
-    var body: some View {
-        HStack(alignment: .top, spacing: 12) {
-            AsyncImage(url: userAvatarURL, transaction: Transaction(animation: .easeInOut)) { phase in
-                switch phase {
-                case .success(let image):
-                    image
-                        .resizable()
-                        .scaledToFill()
-                case .empty:
-                    ProgressView()
-                        .tint(.secondary)
-                case .failure:
-                    Image(systemName: "person.circle")
-                        .resizable()
-                        .scaledToFit()
-                        .symbolRenderingMode(.hierarchical)
-                        .foregroundStyle(.secondary)
-                @unknown default:
-                    EmptyView()
-                }
-            }
-            .frame(width: 48, height: 48)
-            .background(Color(.systemGray5))
-            .clipShape(Circle())
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text(userName)
-                    .font(.headline)
-
-                Text(createdAt)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-
-            Spacer()
-
-            Button(action: {}) {
-                Image(systemName: "ellipsis")
-                    .rotationEffect(.degrees(90))
-                    .foregroundStyle(.secondary)
-                    .padding(6)
-            }
-            .buttonStyle(.plain)
-        }
-    }
-}
-
-private struct PostCellContent: View {
-    let post: Post
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            if let text = post.contentText, !text.isEmpty {
-                Text(text)
-                    .font(.body)
-                    .foregroundStyle(Color.primary)
-            }
-
-            if !post.hashtags.isEmpty {
-                Text(post.hashtags.map { "#\($0)" }.joined(separator: " "))
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(Color.blue)
-            }
-
-            if !post.mentions.isEmpty {
-                Text(post.mentions.map { "@\($0)" }.joined(separator: " "))
-                    .font(.subheadline)
-                    .foregroundStyle(Color.blue)
-            }
-
-            if let imageURL = post.imageURL {
-                RemoteMediaView(url: imageURL, height: 220, cornerRadius: 16)
-            }
-
-            if let videoThumbnailURL = post.videoThumbnailURL {
-                VideoThumbnailView(imageURL: videoThumbnailURL)
-            }
-
-            if let linkPreview = post.linkPreview {
-                LinkPreviewView(preview: linkPreview)
-            }
-        }
     }
 }
 
@@ -236,8 +130,108 @@ private struct LinkPreviewView: View {
     }
 }
 
-private struct PostCellFooter: View {
+private struct PostCellBody: View {
+    let userName: String
+    let userAvatarURL: URL?
+    let post: Post
+
     var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            header
+            content
+            footer
+        }
+        .padding(16)
+        .frame(width: 300, alignment: .topLeading)
+        .background(
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .fill(Color(.systemBackground))
+                .shadow(color: .black.opacity(0.1), radius: 12, x: 0, y: 4)
+        )
+    }
+
+    private var header: some View {
+        HStack(alignment: .top, spacing: 12) {
+            AsyncImage(url: userAvatarURL, transaction: Transaction(animation: .easeInOut)) { phase in
+                switch phase {
+                case .success(let image):
+                    image
+                        .resizable()
+                        .scaledToFill()
+                case .empty:
+                    ProgressView()
+                        .tint(.secondary)
+                case .failure:
+                    Image(systemName: "person.circle")
+                        .resizable()
+                        .scaledToFit()
+                        .symbolRenderingMode(.hierarchical)
+                        .foregroundStyle(.secondary)
+                @unknown default:
+                    EmptyView()
+                }
+            }
+            .frame(width: 48, height: 48)
+            .background(Color(.systemGray5))
+            .clipShape(Circle())
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(userName)
+                    .font(.headline)
+
+                Text(post.createdAt)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+
+            Button(action: {}) {
+                Image(systemName: "ellipsis")
+                    .rotationEffect(.degrees(90))
+                    .foregroundStyle(.secondary)
+                    .padding(6)
+            }
+            .buttonStyle(.plain)
+        }
+    }
+
+    private var content: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            if let text = post.contentText, !text.isEmpty {
+                Text(text)
+                    .font(.body)
+                    .foregroundStyle(Color.primary)
+            }
+
+            if !post.hashtags.isEmpty {
+                Text(post.hashtags.map { "#\($0)" }.joined(separator: " "))
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(Color.blue)
+            }
+
+            if !post.mentions.isEmpty {
+                Text(post.mentions.map { "@\($0)" }.joined(separator: " "))
+                    .font(.subheadline)
+                    .foregroundStyle(Color.blue)
+            }
+
+            if let imageURL = post.imageURL {
+                RemoteMediaView(url: imageURL, height: 220, cornerRadius: 16)
+            }
+
+            if let videoThumbnailURL = post.videoThumbnailURL {
+                VideoThumbnailView(imageURL: videoThumbnailURL)
+            }
+
+            if let linkPreview = post.linkPreview {
+                LinkPreviewView(preview: linkPreview)
+            }
+        }
+    }
+
+    private var footer: some View {
         HStack {
             Button(action: {}) {
                 HStack(spacing: 6) {
