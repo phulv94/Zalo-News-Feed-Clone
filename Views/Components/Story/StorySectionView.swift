@@ -25,6 +25,12 @@ struct StorySectionView: View {
 }
 
 private struct StoryCell: View {
+    private enum Metrics {
+        static let size = CGSize(width: 110, height: 180)
+        static let contentPadding: CGFloat = 12
+        static var contentWidth: CGFloat { size.width - contentPadding * 2 }
+    }
+
     let story: Story
     var onTap: () -> Void
 
@@ -42,7 +48,7 @@ private struct StoryCell: View {
                         Color.gray.opacity(0.1)
                     }
                 }
-                .frame(width: 110, height: 180)
+                .frame(width: Metrics.size.width, height: Metrics.size.height)
                 .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                 .overlay(
                     LinearGradient(
@@ -78,7 +84,9 @@ private struct StoryCell: View {
                         .lineLimit(2)
                         .shadow(radius: 6)
                 }
-                .padding(12)
+                .frame(width: Metrics.contentWidth, alignment: .leading)
+                .multilineTextAlignment(.leading)
+                .padding(Metrics.contentPadding)
             }
         }
         .buttonStyle(.plain)
