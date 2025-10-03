@@ -50,21 +50,21 @@ private struct VideoCardView: View {
                     switch phase {
                     case .empty:
                         Circle()
-                            .fill(Color(.systemGray5))
+                            .fill(Color.systemGray5)
                     case .success(let image):
                         image
                             .resizable()
                             .scaledToFill()
                     case .failure:
                         Circle()
-                            .fill(Color(.systemGray5))
+                            .fill(Color.systemGray5)
                             .overlay(
                                 Image(systemName: "person.fill")
                                     .foregroundStyle(.secondary)
                             )
                     @unknown default:
                         Circle()
-                            .fill(Color(.systemGray5))
+                            .fill(Color.systemGray5)
                     }
                 }
                 .frame(width: 36, height: 36)
@@ -92,7 +92,7 @@ private struct VideoThumbnail: View {
 
             ZStack {
                 roundedRect
-                    .fill(Color(.systemGray5))
+                    .fill(Color.systemGray5)
 
                 AsyncImage(url: url) { phase in
                     switch phase {

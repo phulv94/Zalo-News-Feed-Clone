@@ -82,7 +82,7 @@ private struct PostCellHeader: View {
                 }
             }
             .frame(width: 48, height: 48)
-            .background(Color(.systemGray5))
+            .background(Color.systemGray5)
             .clipShape(Circle())
 
             VStack(alignment: .leading, spacing: 4) {
@@ -176,7 +176,7 @@ private struct RemoteMediaView: View {
     private func placeholderView(symbolName: String) -> some View {
         ZStack {
             RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                .fill(Color(.systemGray6))
+                .fill(Color.systemGray6)
 
             Image(systemName: symbolName)
                 .font(.title2)
@@ -231,7 +231,7 @@ private struct LinkPreviewView: View {
         .padding(14)
         .background(
             RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .fill(Color(.systemGray6))
+                .fill(Color.systemGray6)
         )
     }
 }
