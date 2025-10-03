@@ -78,7 +78,7 @@ private struct SuggestStoryCell: View {
         Button(action: onTap) {
             ZStack {
                 RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .fill(Color(.systemGray6))
+                    .fill(Color.systemGray6)
 
                 if let url = story.thumbnailURL {
                     AsyncImage(url: url) { phase in

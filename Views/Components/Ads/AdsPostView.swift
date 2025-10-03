@@ -20,7 +20,7 @@ struct AdsPostView: View {
 
     private var header: some View {
         HStack(spacing: 12) {
-            AsyncImage(url: post.advertiserAvatarURL, transaction: Transaction(animation: .easeInOut)) { phase in
+        AsyncImage(url: post.advertiserAvatarURL, transaction: Transaction(animation: .easeInOut)) { phase in
                 switch phase {
                 case .success(let image):
                     image
@@ -38,10 +38,10 @@ struct AdsPostView: View {
                 @unknown default:
                     EmptyView()
                 }
-            }
-            .frame(width: 48, height: 48)
-            .background(Color(.systemGray5))
-            .clipShape(Circle())
+        }
+        .frame(width: 48, height: 48)
+        .background(Color.systemGray5)
+        .clipShape(Circle())
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(post.advertiserName)
@@ -116,7 +116,7 @@ private struct RemoteAdMediaView: View {
     private func placeholderView(symbolName: String) -> some View {
         ZStack {
             RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                .fill(Color(.systemGray6))
+                .fill(Color.systemGray6)
 
             Image(systemName: symbolName)
                 .font(.title2)

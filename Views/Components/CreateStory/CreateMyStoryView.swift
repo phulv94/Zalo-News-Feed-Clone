@@ -22,16 +22,16 @@ struct CreateMyStoryView: View {
                         Image(systemName: "person.crop.circle.fill")
                             .resizable()
                             .scaledToFill()
-                            .foregroundStyle(Color(.systemGray3))
+                            .foregroundStyle(Color.systemGray3)
                     @unknown default:
                         Image(systemName: "person.crop.circle.fill")
                             .resizable()
                             .scaledToFill()
-                            .foregroundStyle(Color(.systemGray3))
+                            .foregroundStyle(Color.systemGray3)
                     }
                 }
                 .frame(width: 48, height: 48)
-                .background(Color(.systemGray5))
+                .background(Color.systemGray5)
                 .clipShape(Circle())
 
                 Text(placeholder)
@@ -41,7 +41,7 @@ struct CreateMyStoryView: View {
                     .padding(.horizontal, 16)
                     .background(
                         RoundedRectangle(cornerRadius: 14, style: .continuous)
-                            .fill(Color(.systemGray6))
+                            .fill(Color.systemGray6)
                     )
             }
 
@@ -101,7 +101,7 @@ private struct CreateStoryActionButton: View {
             .padding(.vertical, 4)
             .background(
                 RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .fill(Color(.systemGray5))
+                    .fill(Color.systemGray5)
             )
         }
         .buttonStyle(.plain)
